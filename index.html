@@ -97,29 +97,29 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:
    ✏️  EDITA AQUÍ — todo lo personal está en este bloque
    ============================================================ */
 const CONFIG = {
-  nombre: "Mi Esposa Bella",                 // aparece al inicio
+  nombre: "mi amor",                 // aparece al inicio
 
-  juntosDesde: "2022-03-18",                   // AAAA-MM-DD (boda o inicio). "" para ocultar el contador
+  juntosDesde: "",                   // AAAA-MM-DD (boda o inicio). "" para ocultar el contador
   textoContador: "días a tu lado, y todos los que nos faltan.",
 
   // Un mensaje por toque. *Asteriscos* resaltan palabras.
   mensajes: [
-    "Pense en hacerte algo diferente, algo que fuera unico y especial…",
-    "Eres mi mundo entero, todo es paz al verte a *los ojos*. Y se que la distancia es dificil.",
-    "Pero eres mi lugar favorito: mi calma cuando todo va rápido y mi risa cuando más la necesito.",
-    "Admiro tu fuerza, tu ser y la forma en que vez al mundo sin maldad.",
+    "Hay algo que quiero decirte, y quería hacerlo de una forma diferente…",
+    "Desde que llegaste a mi vida, todo tiene *más color*. Hasta los días normales se sienten especiales.",
+    "Eres mi lugar favorito: mi calma cuando todo va rápido y mi risa cuando más la necesito.",
+    "Admiro tu fuerza, tu ternura y la forma en que cuidas de todo lo que amas.",
     "Cada día a tu lado confirma lo que supe desde el principio: *quiero envejecer contigo*.",
-    "Gracias por tenerme esa paciencia, prometo ser el hombre del que te enamoraste. Lo hare, sin dudarlo.",
+    "Si tuviera que elegir otra vez, te elegiría a ti. *Mil veces*, sin dudarlo.",
   ],
 
-  final: "Eres mi Camino",                   // lo que forman los tulipanes (corto se ve mejor)
+  final: "Te amo",                   // lo que forman los tulipanes (corto se ve mejor)
 
   carta: {
-    saludo: "Genesis:",
+    saludo: "Mi amor:",
     parrafos: [
-      "Quería darte un detallito hoy, unico y sutil. Algo que pudieras abrir cuando quisieras y que te recordara, con flores que nunca se marchitan, lo que siento por ti.",
-      "Gracias por elegirme todos los días. Por tu paciencia cuando estoy cansado, por tu risa cuando a mí no me salen las ganas, la extraño, y por convertir cualquier lugar en un hogar solo con estar ahí.",
-      "Me gusta la vida que estamos construyendo. Todo valdra la pena, esto no puede con nosotros, cada dia que pasa es un dia menos, los planes que nos merecemos llegarán. Y todo mejorará.",
+      "Quería regalarte algo que no se pudiera envolver ni guardar en un cajón. Algo que pudieras abrir cuando quisieras y que te recordara, con flores que nunca se marchitan, lo que siento por ti.",
+      "Gracias por elegirme todos los días. Por tu paciencia cuando estoy cansado, por tu risa cuando a mí no me salen las ganas, y por convertir cualquier lugar en un hogar solo con estar ahí.",
+      "Me gusta la vida que estamos construyendo. Me gustan las mañanas contigo, las pláticas que se alargan sin darnos cuenta, los planes que hacemos aunque luego cambien. Me gusta quién soy cuando estoy a tu lado.",
       "No sé todo lo que nos espera, pero sé con quién quiero vivirlo. Hoy, mañana y todos los días que vengan, te elijo a ti.",
     ],
     despedida: "Te amo con todo lo que soy,",
@@ -231,8 +231,21 @@ function makeBackground(){
   const glow = g.createRadialGradient(W/2,H*1.05,10,W/2,H*1.05,Math.max(W,H)*.75);
   glow.addColorStop(0,"rgba(255,140,120,.35)"); glow.addColorStop(1,"rgba(255,140,120,0)");
   g.fillStyle = glow; g.fillRect(0,0,W,H);
-  // estrellitas tenues
-  for (let i=0;i<Math.round(W*H/5000);i++){ g.fillStyle = `rgba(255,240,250,${rnd(.15,.6)})`; g.beginPath(); g.arc(rnd(0,W), rnd(0,H*.6), rnd(.3,1.1), 0, Math.PI*2); g.fill(); }
+}
+
+/* ---------- estrellas del cielo (forman el "Te amo") ---------- */
+let stars = [], NS = 0;
+function makeStars(){
+  NS = Math.round(Math.min(1100, Math.max(450, (W*H)/900)));
+  stars = [];
+  for (let i=0;i<NS;i++){
+    const gold = Math.random() < 0.14;
+    stars.push({
+      x: rnd(0,W), y: rnd(0,H*.6), vx:0, vy:0,
+      sx: rnd(0,W), sy: Math.pow(Math.random(),1.3)*H*.6, ph: rnd(0,6.3), sp: rnd(.2,.7), tw: rnd(0,6.3),
+      size: rnd(.7,2), hue: gold ? rnd(32,44) : rnd(328,356), sat: gold ? 95 : rnd(75,95), lit: gold ? 72 : rnd(64,80),
+    });
+  }
 }
 
 function makeParticles(){
@@ -266,11 +279,11 @@ function sampleText(str){
   o.textAlign = "center"; o.textBaseline = "middle"; o.fillStyle = "#fff";
   o.fillText(str, W/2, H*0.34);
   const d = o.getImageData(0,0,W,H).data;
-  let gap = Math.max(3, Math.round(fs/26)), pts = [];
+  let gap = Math.max(2, Math.round(fs/38)), pts = [];
   for (let k=0;k<8;k++){
     pts = [];
-    for (let y=0;y<H;y+=gap) for (let x=0;x<W;x+=gap) if (d[(y*W+x)*4+3] > 140) pts.push([x,y]);
-    if (pts.length > N*1.15 && gap < 14) gap++; else if (pts.length < N*0.7 && gap > 2) gap--; else break;
+    for (let y=0;y<H;y+=gap) for (let x=0;x<W;x+=gap) if (d[(y*W+x)*4+3] > 128) pts.push([x + rnd(-.6,.6), y + rnd(-.6,.6)]);
+    if (pts.length > NS*1.6 && gap < 12) gap++; else if (pts.length < NS*0.6 && gap > 2) gap--; else break;
   }
   for (let i=pts.length-1;i>0;i--){ const j=(Math.random()*(i+1))|0; [pts[i],pts[j]]=[pts[j],pts[i]]; }
   return {pts, size: Math.max(9, gap*2.1)};
@@ -362,7 +375,28 @@ function frame(ms){
   const G = heartGeom(), b = beat(t);
   const k = mode==="garden" ? 0.018 : mode==="heart" ? 0.03 : 0.026;
   const R = Math.min(W,H)*0.15;
-  const tsz = textTargets.size || 12;
+
+  // estrellas: brillan en el cielo y al final escriben el mensaje
+  const ks = mode === "text" ? 0.024 : 0.006;
+  ctx.globalCompositeOperation = "lighter";
+  for (let i=0;i<stars.length;i++){
+    const p = stars[i];
+    let tx, ty;
+    if (mode === "text" && textTargets.length){
+      const q = textTargets[i % textTargets.length];
+      tx = q[0] + Math.sin(t*1.3+p.ph)*.8; ty = q[1] + Math.cos(t*1.1+p.ph)*.8;
+    } else {
+      tx = p.sx + Math.sin(t*p.sp*.4+p.ph)*14; ty = p.sy + Math.cos(t*p.sp*.3+p.ph)*10;
+    }
+    p.vx += (tx-p.x)*ks; p.vy += (ty-p.y)*ks;
+    if (ptr.active){ const dx=p.x-ptr.x, dy=p.y-ptr.y, d2=dx*dx+dy*dy; if (d2<R*R){ const d=Math.sqrt(d2)||1, f=(1-d/R)*1.6; p.vx+=dx/d*f; p.vy+=dy/d*f; } }
+    p.vx *= .86; p.vy *= .86; p.x += p.vx; p.y += p.vy;
+    const a = mode === "text" ? .75 + .25*Math.sin(t*3+p.tw) : (.25 + .5*Math.abs(Math.sin(t*p.sp*2+p.tw)));
+    const sz = mode === "text" ? p.size : p.size*.75;
+    ctx.fillStyle = `hsla(${p.hue},${p.sat}%,${p.lit}%,${a})`;
+    ctx.beginPath(); ctx.arc(p.x, p.y, sz, 0, Math.PI*2); ctx.fill();
+  }
+  ctx.globalCompositeOperation = "source-over";
 
   for (let i=0;i<parts.length;i++){
     const p = parts[i];
@@ -370,10 +404,6 @@ function frame(ms){
     if (mode === "heart"){
       tx = G.cx + p.rx*G.k*b; ty = G.cy + p.ry*G.k*b;
       ts = G.unit*0.064*(.75 + p.depth*.5); tr = p.tilt*.6 + Math.sin(t*1.4+p.ph)*.05; tsA = 0;
-    } else if (mode === "text" && textTargets.length){
-      const q = textTargets[i % textTargets.length];
-      tx = q[0] + Math.sin(t*1.2+p.ph)*.7; ty = q[1] + Math.cos(t+p.ph)*.7;
-      ts = tsz*(.85 + p.depth*.35); tr = p.tilt*.5; tsA = 0;
     } else {
       const sway = Math.sin(t*p.sp + p.ph + p.sx*.01);
       tx = p.sx + sway*3; ty = p.sy;
@@ -388,7 +418,7 @@ function frame(ms){
     const c = Math.cos(p.rot), sn = Math.sin(p.rot);
     ctx.setTransform(c*DPR, sn*DPR, -sn*DPR, c*DPR, p.x*DPR, p.y*DPR);
     if (p.stemA > .02 && !p.heart){ ctx.globalAlpha = p.stemA; ctx.drawImage(STEM, -s/2, -s/2, s, s*2); }
-    ctx.globalAlpha = mode==="garden" ? lerp(.7,1,p.depth) : 1;
+    ctx.globalAlpha = mode!=="heart" ? lerp(.7,1,p.depth) : 1;
     ctx.drawImage(p.heart ? HEARTSPR : HEADS[p.pal], -s/2, -s/2, s, s);
   }
   ctx.globalAlpha = 1;
@@ -413,6 +443,8 @@ function resize(){
   W = innerWidth; H = innerHeight;
   cv.width = W*DPR; cv.height = H*DPR;
   makeBackground();
+  if (!stars.length) makeStars();
+  else for (const s of stars){ s.sx = rnd(0,W); s.sy = Math.pow(Math.random(),1.3)*H*.6; }
   if (!parts.length) makeParticles();
   else { const gTop = H*.56; for (const p of parts){ p.sx = rnd(-20,W+20); p.sy = lerp(gTop, H*1.02, p.depth); } }
   if (mode === "text"){ const r = sampleText(CONFIG.final); textTargets = r.pts; textTargets.size = r.size; }
